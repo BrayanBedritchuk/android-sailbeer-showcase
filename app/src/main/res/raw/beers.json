@@ -1,0 +1,56 @@
+{
+  "beers": [
+    {
+      "name": "Brahma",
+      "country": "Brazil"
+    },
+    {
+      "name": "Dos Equis",
+      "country": "Mexico"
+    },
+    {
+      "name": "Duvel",
+      "country": "Belgium"
+    },
+    {
+      "name": "Eisenbahn",
+      "country": "Brazil"
+    },
+    {
+      "name": "Bud Light",
+      "country": "USA"
+    },
+    {
+      "name": "Budweiser",
+      "country": "USA"
+    },
+    {
+      "name": "Corona",
+      "country": "Mexico"
+    },
+    {
+      "name": "Heineken",
+      "country": "Netherlands"
+    },
+    {
+      "name": "Leffe",
+      "country": "Belgium"
+    },
+    {
+      "name": "Quilmes",
+      "country": "Argentina"
+    },
+    {
+      "name": "Skol",
+      "country": "Brazil"
+    },
+    {
+      "name": "Sol",
+      "country": "Mexico"
+    },
+    {
+      "name": "Stella Artois",
+      "country": "Belgium"
+    }
+  ]
+}
