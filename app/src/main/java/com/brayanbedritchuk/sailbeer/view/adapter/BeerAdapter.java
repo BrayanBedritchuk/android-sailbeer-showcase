@@ -1,49 +1,40 @@
 package com.brayanbedritchuk.sailbeer.view.adapter;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
-import com.brayanbedritchuk.sailbeer.R;
 import com.brayanbedritchuk.sailbeer.model.Beer;
 
 import java.util.List;
 
 public class BeerAdapter extends RecyclerView.Adapter<BeerViewHolder> {
 
-    private List<Beer> beerList;
+    private BeerAdapter.Callback callback;
 
-    public BeerAdapter(List<Beer> items) {
-        setBeerList(items);
+    public BeerAdapter(Callback callback) {
+        this.callback = callback;
     }
+
     @Override
     public BeerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflateLayout(parent, R.layout.view_holder_beer);
-        return new BeerViewHolder(view);
+        return BeerViewHolder.newInstance(parent);
     }
 
     @Override
     public void onBindViewHolder(BeerViewHolder holder, int position) {
-        Beer beer = getBeerList().get(position);
-        holder.bindData(beer);
+        Beer beer = callback.getBeerList().get(position);
+        holder.bindItem(beer);
     }
 
     @Override
     public int getItemCount() {
-        return getBeerList().size();
+        return callback.getBeerList().size();
     }
 
-    private View inflateLayout(ViewGroup parent, int layoutId) {
-        return LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+
+    public interface Callback {
+        List<Beer> getBeerList();
     }
 
-    public List<Beer> getBeerList() {
-        return beerList;
-    }
-
-    public void setBeerList(List<Beer> beerList) {
-        this.beerList = beerList;
-    }
 
 }

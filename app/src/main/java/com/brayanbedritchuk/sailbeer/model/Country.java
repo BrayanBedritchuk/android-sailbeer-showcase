@@ -4,12 +4,12 @@ import com.brayanbedritchuk.sailbeer.R;
 
 public enum Country {
 
-    ARGENTINA("Argentina", R.drawable.argentina_flag),
-    BRAZIL("Brazil", R.drawable.brazil_flag),
-    BELGIUM("Belgium", R.drawable.belgium_flag),
-    MEXICO("Mexico", R.drawable.mexico_flag),
-    NETHERLANDS("Netherlands", R.drawable.netherlands_flag),
-    USA("USA", R.drawable.usa_flag);
+    ARGENTINA("Argentina", R.drawable.ic_argentina),
+    BRAZIL("Brazil", R.drawable.ic_brazil),
+    BELGIUM("Belgium", R.drawable.ic_belgium),
+    MEXICO("Mexico", R.drawable.ic_mexico),
+    NETHERLANDS("Netherlands", R.drawable.ic_netherlands),
+    USA("USA", R.drawable.ic_usa);
 
     Country(String name, int flagId) {
         this.name = name;

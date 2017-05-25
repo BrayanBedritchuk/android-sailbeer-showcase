@@ -1,43 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:id="@+id/frame_animation"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
 
-    <FrameLayout
-        android:layout_gravity="center"
+    <ImageView
+        android:id="@+id/frame_animation__img__background"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/background"/>
 
-        <ImageView
-            android:id="@+id/frame_animation__img__background"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/background" />
+    <ImageView
+        android:id="@+id/frame_animation__img__circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/circle"/>
 
-        <ImageView
-            android:id="@+id/frame_animation__img__circle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/circle" />
+    <ImageView
+        android:id="@+id/frame_animation__img__beer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/beer"/>
 
-        <ImageView
-            android:id="@+id/frame_animation__img__beer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/beer" />
-
-        <TextView
-            android:id="@+id/frame_animation__tv__sailbeer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:paddingTop="200dp"
-            android:text="@string/app_name"
-            android:textSize="22sp" />
-
-    </FrameLayout>
+    <TextView
+        android:id="@+id/frame_animation__tv__sailbeer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingTop="200dp"
+        android:text="@string/app_name"
+        android:textSize="22sp"/>
 
 </FrameLayout>

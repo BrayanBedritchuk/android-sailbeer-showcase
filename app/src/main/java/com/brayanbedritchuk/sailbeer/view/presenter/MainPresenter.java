@@ -1,69 +1,117 @@
 package com.brayanbedritchuk.sailbeer.view.presenter;
 
+import android.support.annotation.NonNull;
+
+import com.brayanbedritchuk.sailbeer.R;
 import com.brayanbedritchuk.sailbeer.helper.PreferencesHelper;
 import com.brayanbedritchuk.sailbeer.model.Beer;
-import com.brayanbedritchuk.sailbeer.model.viewmodel.MainViewModel;
+import com.brayanbedritchuk.sailbeer.model.Country;
+import com.brayanbedritchuk.sailbeer.persistence.BeerDAO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class MainPresenter {
+import br.com.sailboat.canoe.base.BasePresenter;
+import br.com.sailboat.canoe.helper.AsyncHelper;
+import br.com.sailboat.canoe.helper.LogHelper;
 
-    private MainView view;
-    private MainViewModel viewModel;
+public class MainPresenter extends BasePresenter<MainPresenter.View> {
 
-    public MainPresenter(MainView view) {
-        setView(view);
-        setViewModel(new MainViewModel());
+    private MainViewModel viewModel = new MainViewModel();
+
+    public MainPresenter(MainPresenter.View view) {
+        super(view);
     }
 
-    public void onResume() {
-        verifyAndPerformInitialAnimation();
-        verifyAndLoadBeers();
-        getViewModel().setFirstSession(false);
+    @Override
+    protected void onResumeFirstSession() {
+        loadBeers();
     }
 
-    private void verifyAndPerformInitialAnimation() {
-        if (!PreferencesHelper.wasInitialAnimationShown(getView().getActivityContext())) {
-            getViewModel().setPerformingAnimation(true);
-            getView().performInitialAnimation();
-        }
-    }
-
-    private void verifyAndLoadBeers() {
-        if (getViewModel().isFirstSession()) {
-            new BeerLoaderAsyncTask(getView(), getViewModel()).execute();
-        }
+    @Override
+    protected void postResume() {
+        performInitialAnimation();
     }
 
     public void onClickMenuRepeatAnimation() {
-        if (!getViewModel().isPerformingAnimation()) {
-            PreferencesHelper.removeInitialAnimationAsShown(getView().getActivityContext());
-            getView().performInitialAnimation();
+        if (!viewModel.isPerformingAnimation()) {
+            PreferencesHelper.removeInitialAnimationAsShown(getContext());
+            view.performInitialAnimation();
         }
     }
 
     public void onLastAnimationFinished() {
-        getViewModel().setPerformingAnimation(false);
+        viewModel.setPerformingAnimation(false);
     }
 
-    public MainViewModel getViewModel() {
-        return viewModel;
-    }
-
-    public void setViewModel(MainViewModel viewModel) {
-        this.viewModel = viewModel;
-    }
-
-    public MainView getView() {
-        return view;
-    }
-
-    public void setView(MainView view) {
-        this.view = view;
-    }
 
     public List<Beer> getBeers() {
-        return getViewModel().getBeerList();
+        return viewModel.getBeerList();
     }
+
+    private void loadBeers() {
+        AsyncHelper.execute(new AsyncHelper.Callback() {
+
+            List<Beer> beers;
+
+            @Override
+            public void doInBackground() throws Exception {
+                beers = BeerDAO.getInstance(getContext()).getBeers();
+                initFlagDrawableId();
+            }
+
+            @Override
+            public void onSuccess() {
+                viewModel.getBeerList().clear();
+                viewModel.getBeerList().addAll(beers);
+                getView().updateBeerList();
+
+                if (!viewModel.isPerformingAnimation()) {
+                    view.performBeersAnimation();
+                }
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                LogHelper.logException(e);
+                showMessage(getString(R.string.msg_error));
+            }
+
+            private void initFlagDrawableId() {
+                Map<String, Integer> mapCountries = getCountriesMapFromEnum();
+
+                for (Beer beer : beers) {
+                    beer.setFlagDrawableId(mapCountries.get(beer.getCountry()));
+                }
+            }
+
+            @NonNull
+            private Map<String, Integer> getCountriesMapFromEnum() {
+                Map<String, Integer> mapCountries = new HashMap<>();
+                for (Country country : Country.values()) {
+                    mapCountries.put(country.getName(), country.getFlagId());
+                }
+
+                return mapCountries;
+            }
+        });
+
+    }
+
+    private void performInitialAnimation() {
+        if (!PreferencesHelper.wasInitialAnimationShown(getContext())) {
+            viewModel.setPerformingAnimation(true);
+            view.performInitialAnimation();
+        }
+    }
+
+
+    public interface View extends BasePresenter.View {
+        void performInitialAnimation();
+        void updateBeerList();
+        void performBeersAnimation();
+    }
+
 
 }

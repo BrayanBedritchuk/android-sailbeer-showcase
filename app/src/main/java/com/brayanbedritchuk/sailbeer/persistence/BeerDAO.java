@@ -19,7 +19,7 @@ public class BeerDAO {
     private static BeerDAO instance;
 
     private BeerDAO(Context context) {
-        setContext(context.getApplicationContext());
+        this.context = context.getApplicationContext();
     }
 
     public static final BeerDAO getInstance(Context context) {
@@ -30,7 +30,7 @@ public class BeerDAO {
     }
 
     public List<Beer> getBeers() throws Exception {
-        InputStream raw =  getContext().getResources().openRawResource(R.raw.beers);
+        InputStream raw =  context.getResources().openRawResource(R.raw.beers);
         Reader reader = new BufferedReader(new InputStreamReader(raw));
 
         BeersJSONList json = new Gson().fromJson(reader, BeersJSONList.class);
@@ -39,12 +39,5 @@ public class BeerDAO {
         return json.getBeers();
     }
 
-    public Context getContext() {
-        return context;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
-    }
 
 }

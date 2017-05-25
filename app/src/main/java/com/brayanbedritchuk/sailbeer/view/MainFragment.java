@@ -1,65 +1,52 @@
 package com.brayanbedritchuk.sailbeer.view;
 
-import android.content.Context;
-import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.brayanbedritchuk.sailbeer.R;
-import com.brayanbedritchuk.sailbeer.helper.ActivityHelper;
 import com.brayanbedritchuk.sailbeer.helper.AnimationHelper;
 import com.brayanbedritchuk.sailbeer.helper.PreferencesHelper;
-import com.brayanbedritchuk.sailbeer.helper.ViewHelper;
+import com.brayanbedritchuk.sailbeer.model.Beer;
 import com.brayanbedritchuk.sailbeer.view.adapter.BeerAdapter;
 import com.brayanbedritchuk.sailbeer.view.presenter.MainPresenter;
-import com.brayanbedritchuk.sailbeer.view.presenter.MainView;
 
-public class MainFragment extends Fragment implements MainView {
+import java.util.List;
 
-    private MainPresenter presenter;
+import br.com.sailboat.canoe.base.BaseFragment;
+import br.com.sailboat.canoe.helper.UIHelper;
+import br.com.sailboat.canoe.helper.ViewHelper;
+
+
+public class MainFragment extends BaseFragment<MainPresenter> implements MainPresenter.View, BeerAdapter.Callback {
 
     private AppBarLayout appBar;
     private Toolbar toolbar;
-
     private ImageView imgBackground;
     private ImageView imgCircle;
     private ImageView imgBeer;
     private TextView tvSailbeer;
-    private TextView tvToolbarTitle;
     private FrameLayout animationFrame;
-    private RecyclerView recyclerView;
-    private BeerAdapter adapter;
-    private CardView cardBeers;
+    private RecyclerView recycler;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        setHasOptionsMenu(true);
-        initPresenter();
+    protected int getLayoutId() {
+        return R.layout.frg_main;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.fragment_main, container, false);
-        initViews(contentView);
-        return contentView;
+    protected MainPresenter newPresenterInstance() {
+        return new MainPresenter(this);
     }
 
     @Override
@@ -72,7 +59,7 @@ public class MainFragment extends Fragment implements MainView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_main_repeat_animation: {
-                getPresenter().onClickMenuRepeatAnimation();
+                presenter.onClickMenuRepeatAnimation();
                 return true;
             }
             default: {
@@ -82,76 +69,62 @@ public class MainFragment extends Fragment implements MainView {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        getPresenter().onResume();
-    }
-
-    private void initPresenter() {
-        setPresenter(new MainPresenter(this));
-    }
-
-    private void initViews(View contentView) {
-        inflateViews(contentView);
+    protected void initViews(View view) {
+        inflateViews(view);
         initRecyclerView();
         initToolbar();
         initViewsVisibility();
     }
 
     public void performInitialAnimation() {
-        ActivityHelper.blockScreenOrientation(getActivity());
+        UIHelper.blockScreenOrientation(getActivity());
         initViewsVisibilityBeforeAnimate();
         animateCircle();
     }
 
     @Override
-    public void performCardBeersAnimation() {
-        onPerformCardBeersAnimation();
+    public void performBeersAnimation() {
+        onPerformBeersAnimation();
 
         appBar.animate().alpha(1f).yBy(100f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
-                cardBeers.setY(cardBeers.getY() + 100f);
-                cardBeers.animate().alpha(1f).yBy(-100f).setDuration(300)
+                recycler.setY(recycler.getY() + 100f);
+                recycler.animate().alpha(1f).yBy(-100f).setDuration(300)
                         .withEndAction(new Runnable() {
                     @Override
                     public void run() {
-                        onCardBeersAnimationFinished();
+                        onBeersAnimationFinished();
                     }
                 });
             }
         });
     }
 
-    private void onCardBeersAnimationFinished() {
-        ActivityHelper.unblockScreenOrientation(getActivity());
+    private void onBeersAnimationFinished() {
+        UIHelper.unblockScreenOrientation(getActivity());
         PreferencesHelper.setInitialAnimationAsShown(getActivity());
-        getPresenter().onLastAnimationFinished();
+        presenter.onLastAnimationFinished();
     }
 
-    private void onPerformCardBeersAnimation() {
+    private void onPerformBeersAnimation() {
         appBar.setVisibility(View.VISIBLE);
-        cardBeers.setVisibility(View.VISIBLE);
+        recycler.setVisibility(View.VISIBLE);
 
         appBar.setAlpha(0f);
-        cardBeers.setAlpha(0f);
+        recycler.setAlpha(0f);
 
         appBar.setY(appBar.getY() - 100f);
     }
 
     @Override
     public void updateBeerList() {
-        adapter.notifyDataSetChanged();
+        recycler.getAdapter().notifyDataSetChanged();
     }
 
     @Override
-    public void showToast(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public Context getActivityContext() {
-        return getActivity();
+    public List<Beer> getBeerList() {
+        return presenter.getBeers();
     }
 
     private void inflateViews(View contentView) {
@@ -160,32 +133,21 @@ public class MainFragment extends Fragment implements MainView {
         imgBackground = (ImageView) contentView.findViewById(R.id.frame_animation__img__background);
         imgCircle = (ImageView) contentView.findViewById(R.id.frame_animation__img__circle);
         imgBeer = (ImageView) contentView.findViewById(R.id.frame_animation__img__beer);
-        tvToolbarTitle = (TextView) contentView.findViewById(R.id.toolbar_title);
         tvSailbeer = (TextView) contentView.findViewById(R.id.frame_animation__tv__sailbeer);
-        animationFrame = (FrameLayout) contentView.findViewById(R.id.fragment_main__frame__animation);
-        recyclerView = (RecyclerView) contentView.findViewById(R.id.fragment_main__recycler__beers);
-        cardBeers = (CardView) contentView.findViewById(R.id.fragment_main__cardview__beers);
+        animationFrame = (FrameLayout) contentView.findViewById(R.id.frame_animation);
+        recycler = (RecyclerView) contentView.findViewById(R.id.recycler);
     }
 
     private void initRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new BeerAdapter(getPresenter().getBeers());
-        recyclerView.setAdapter(adapter);
+        recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recycler.setAdapter(new BeerAdapter(this));
     }
 
     private void initToolbar() {
-        initAppCompatActivity();
-        initToolbarTitle();
-    }
-
-    protected void initAppCompatActivity() {
         AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
         appCompatActivity.setSupportActionBar(toolbar);
         appCompatActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-    }
-
-    private void initToolbarTitle() {
-        tvToolbarTitle.setText(getString(R.string.app_name));
+        toolbar.setTitle(R.string.app_name);
     }
 
     private void initViewsVisibility() {
@@ -196,7 +158,7 @@ public class MainFragment extends Fragment implements MainView {
         animationFrame.setVisibility(View.VISIBLE);
 
         appBar.setVisibility(View.GONE);
-        cardBeers.setVisibility(View.GONE);
+        recycler.setVisibility(View.GONE);
 
         ViewHelper.scaleUp(animationFrame);
 
@@ -256,15 +218,7 @@ public class MainFragment extends Fragment implements MainView {
 
     private void onAnimationFrameFinished() {
         animationFrame.setVisibility(View.GONE);
-        performCardBeersAnimation();
-    }
-
-    public MainPresenter getPresenter() {
-        return presenter;
-    }
-
-    public void setPresenter(MainPresenter presenter) {
-        this.presenter = presenter;
+        performBeersAnimation();
     }
 
 }
