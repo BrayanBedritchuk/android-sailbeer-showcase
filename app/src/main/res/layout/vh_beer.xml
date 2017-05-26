@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="64dp">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="64dp">
 
     <ImageView
         android:id="@+id/vh_beer__img__flag"
@@ -12,9 +12,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="16dp"
-        app:srcCompat="@drawable/ic_netherlands"/>
-
-    <include layout="@layout/divider"/>
+        tools:src="@drawable/ic_netherlands"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,9 +29,9 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            tools:text="Heineken"
             android:textColor="@color/md_blue_grey_700"
-            android:textSize="16sp"/>
+            android:textSize="@dimen/text_size_small"
+            tools:text="Heineken"/>
 
         <TextView
             android:id="@+id/vh_beer__tv__country"
@@ -41,11 +39,12 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            tools:text="Netherlands"
             android:textColor="@color/md_blue_grey_400"
-            android:textSize="14sp"/>
+            android:textSize="@dimen/text_size_xsmall"
+            tools:text="Netherlands"/>
 
     </LinearLayout>
 
+    <include layout="@layout/divider"/>
 
 </RelativeLayout>
